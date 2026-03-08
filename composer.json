@@ -1,5 +1,5 @@
 {
-    "name": "roundcube/snoozed-messages",
+    "name": "poremland/snoozed-messages",
     "description": "Roundcube plugin to snooze emails",
     "keywords": ["roundcube", "plugin", "snooze", "inbox-zero"],
     "homepage": "https://github.com/poremland/roundcube-snoozed-messages",
