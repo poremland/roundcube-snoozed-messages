@@ -250,6 +250,19 @@ class snoozed_messages extends rcube_plugin
         
         // Load connection options (important for SSL verification etc.)
         $conn_options = $rcmail->config->get('imap_conn_options');
+        
+        // If no options are set, provide safe defaults for local/internal connections
+        // that often use self-signed certificates or IP addresses.
+        if (empty($conn_options)) {
+            $conn_options = [
+                'ssl' => [
+                    'verify_peer'       => false,
+                    'verify_peer_name'  => false,
+                    'allow_self_signed' => true,
+                ],
+            ];
+        }
+
         if (!empty($conn_options)) {
             $storage->set_options($conn_options);
         }

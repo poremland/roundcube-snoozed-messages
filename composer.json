@@ -1,6 +1,6 @@
 {
     "name": "poremland/snoozed_messages",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Roundcube plugin to snooze emails",
     "keywords": ["roundcube", "plugin", "snooze", "inbox-zero"],
     "homepage": "https://github.com/poremland/roundcube-snoozed-messages",
@@ -22,6 +22,11 @@
     "autoload": {
         "psr-4": {
             "Roundcube\\SnoozedMessages\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "roundcube/plugin-installer": true
         }
     },
     "extra": {
