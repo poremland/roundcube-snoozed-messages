@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_imap_ssl_20260308",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-03-08T22:30:00Z",
+  "updated_at": "2026-03-08T22:30:00Z",
+  "description": "Fix Production Error: Could not connect to ssl://192.168.4.113:993: Unknown reason"
+}
