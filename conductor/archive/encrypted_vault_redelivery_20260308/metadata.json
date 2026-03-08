@@ -1,0 +1,8 @@
+{
+  "id": "encrypted_vault_redelivery_20260308",
+  "title": "Offline Redelivery with Encrypted Credential Vault",
+  "description": "Implement secure storage of encrypted IMAP credentials to enable automated unsnoozing while users are logged out.",
+  "status": "in-progress",
+  "created_at": "2026-03-08T03:30:00Z",
+  "updated_at": "2026-03-08T03:30:00Z"
+}

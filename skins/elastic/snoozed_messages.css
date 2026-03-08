@@ -1,0 +1,105 @@
+/* Roundcube Snooze Plugin Styles - Aligned with core Elastic patterns */
+
+.snooze-menu {
+  min-width: 180px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* 
+ * Shared Icon Font Properties 
+ */
+.toolbar a.snooze:before,
+.toolbar a.unsnooze:before,
+.snooze-menu a:before {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-family: icons !important;
+  font-style: normal !important;
+  font-variant: normal !important;
+  font-weight: 900 !important;
+  speak: none !important;
+  text-transform: none !important;
+}
+
+/* 
+ * Main Toolbar Icon - Aligned with 'Delete'/'Reply' 
+ * Pattern from .menu.toolbar a:before and a.toolbar-button
+ */
+.toolbar a.snooze:before,
+.toolbar a.unsnooze:before {
+  display: block !important;
+  float: none !important;
+  font-size: 1.5rem;
+  height: 1.75rem !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+  text-align: center;
+  width: auto !important;
+}
+
+.toolbar a.snooze:before {
+  content: '\f017';
+}
+
+.toolbar a.unsnooze:before {
+  content: '\f1da'; /* history / unsnooze */
+}
+
+/* 
+ * Toolbar Button Text 
+ * Pattern from a.toolbar-button span.inner
+ */
+.toolbar a.snooze .inner,
+.toolbar a.unsnooze .inner {
+  display: inline !important;
+  font-size: 90% !important;
+  font-weight: normal !important;
+}
+
+/* 
+ * Menu Item Icon Properties 
+ * Pattern from .popover .menu li a:before
+ */
+.snooze-menu a {
+  display: block;
+  padding: 0 0.5rem;
+  text-align: left;
+}
+
+.snooze-menu a:before {
+  content: '\f073';
+  display: block !important;
+  float: left !important;
+  font-size: 1.25em;
+  height: inherit !important;
+  line-height: inherit !important;
+  margin-right: 0.5rem !important;
+  min-width: 1.18em;
+  text-align: center;
+  width: 1.18em !important;
+}
+
+/* Specific Menu Mappings */
+.snooze-menu a.snooze-custom:before {
+  content: '\f133';
+}
+
+/* Menu Item Text alignment */
+.snooze-menu span.inner {
+  font-size: 100%;
+}
+
+/* Custom Dialog Styles */
+.snooze-custom-dialog p {
+  margin-bottom: 10px;
+}
+
+.snooze-custom-time {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 5px;
+  width: 100%;
+}

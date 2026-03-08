@@ -1,0 +1,8 @@
+{
+  "track_id": "remediate_imap_injection_20260308",
+  "type": "security",
+  "status": "new",
+  "created_at": "2026-03-08T13:10:00Z",
+  "updated_at": "2026-03-08T13:10:00Z",
+  "description": "Address all security findings medium and above"
+}

@@ -1,0 +1,30 @@
+{
+    "name": "roundcube/snoozed-messages",
+    "description": "Roundcube plugin to snooze emails",
+    "keywords": ["roundcube", "plugin", "snooze", "inbox-zero"],
+    "homepage": "https://github.com/poremland/roundcube-snoozed-messages",
+    "type": "roundcube-plugin",
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Paul Oremland",
+            "email": "paul@oremland.net"
+        }
+    ],
+    "require": {
+        "php": ">=8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Roundcube\\SnoozedMessages\\": "src/"
+        }
+    },
+    "extra": {
+        "roundcube": {
+            "min-version": "1.5.0"
+        }
+    }
+}
