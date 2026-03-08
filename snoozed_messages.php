@@ -640,7 +640,7 @@ class snoozed_messages extends rcube_plugin
     private function generate_menu()
     {
         $rcmail = $this->get_rcmail();
-        $out = '<div id="snooze-menu" class="popupmenu snooze-menu snoozed-messages-menu" aria-hidden="true">';
+        $out = '<div id="snooze-menu" class="popupmenu snooze-menu snoozed_messages_menu" aria-hidden="true">';
         $out .= '<h3 class="voice">' . $this->gettext('snooze') . '</h3>';
         $out .= '<ul class="menu listing" role="menu">';
         
