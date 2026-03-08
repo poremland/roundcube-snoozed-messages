@@ -24,6 +24,11 @@
             "Roundcube\\SnoozedMessages\\": "src/"
         }
     },
+    "config": {
+        "allow-plugins": {
+            "roundcube/plugin-installer": true
+        }
+    },
     "extra": {
         "roundcube": {
             "min-version": "1.5.0"
