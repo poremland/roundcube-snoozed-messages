@@ -22,6 +22,17 @@ use PHPUnit\Framework\TestCase;
 
 class SnoozeTimeInListTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        rcmail::reset_instance();
+        rcube_utils::$inputs = [];
+    }
+
+    protected function tearDown(): void
+    {
+        rcube_utils::$inputs = [];
+    }
+
     public function testMessagesListHook()
     {
         require_once 'snoozed_messages.php';
@@ -30,11 +41,7 @@ class SnoozeTimeInListTest extends TestCase
         $db->method('table_name')->willReturn('snoozed_messages');
         
         // Mock query results
-        $db->method('query')->willReturn(true);
-        $db->method('fetch_assoc')->willReturnOnConsecutiveCalls(
-            ['message_id' => '123', 'snoozed_until' => '2026-03-10 09:00:00'],
-            null
-        );
+        $db->method('query')->willReturn(new stdClass());
 
         $rcmail = rcmail::get_instance();
         $rcmail->user = new stdClass();
@@ -42,14 +49,25 @@ class SnoozeTimeInListTest extends TestCase
         $rcmail->db = $db;
         $rcmail->storage = $this->createMock(rcube_storage::class);
         $rcmail->storage->method('get_folder')->willReturn('Snoozed');
+        
+        rcube_utils::$inputs['_mbox'] = 'Snoozed';
 
         $plugin = $this->getMockBuilder('snoozed_messages')
             ->disableOriginalConstructor()
-            ->onlyMethods(['get_rcmail'])
+            ->onlyMethods(['get_rcmail', 'get_message_id_header'])
             ->getMock();
         $plugin->method('get_rcmail')->willReturn($rcmail);
+        
+        // Mock ID extraction
+        $plugin->method('get_message_id_header')->willReturnCallback(function($uid, $folder) {
+            return $uid === '123' ? '<msg123@id>' : '<msg456@id>';
+        });
 
-        // Define mock messages argument
+        // Mock query results
+        $db->method('fetch_assoc')->willReturnOnConsecutiveCalls(
+            ['user_id' => 1, 'message_id' => '123', 'message_id_header' => '<msg123@id>', 'snoozed_until' => '2026-03-10 09:00:00'],
+            null
+        );
         $msg1 = new stdClass();
         $msg1->uid = '123';
         $msg2 = new stdClass();
@@ -59,18 +77,22 @@ class SnoozeTimeInListTest extends TestCase
             'messages' => [$msg1, $msg2]
         ];
 
-        // Call the hook handler (which doesn't exist yet, so this will fail)
+        // Call the hook handler
         $result = $plugin->messages_list_handler($args);
 
-        // Assertions
-        $this->assertObjectHasProperty('snooze_until', $result['messages'][0]);
-        $this->assertEquals('2026-03-10 09:00:00', $result['messages'][0]->snooze_until);
-        $this->assertObjectNotHasProperty('snooze_until', $result['messages'][1]);
+        // Assertions: verify data passed to client via env
+        $snooze_data = isset($rcmail->output->env['snooze_data']) ? $rcmail->output->env['snooze_data'] : null;
+        $this->assertIsArray($snooze_data);
+        $this->assertArrayHasKey('123', $snooze_data);
+        $this->assertEquals('2026-03-10 09:00:00', $snooze_data['123']);
+        $this->assertArrayNotHasKey('456', $snooze_data);
     }
 
     public function testMessagesListHookOutsideSnoozedFolder()
     {
         require_once 'snoozed_messages.php';
+        
+        rcube_utils::$inputs['_mbox'] = 'INBOX';
 
         $rcmail = rcmail::get_instance();
         $rcmail->storage = $this->createMock(rcube_storage::class);
@@ -92,7 +114,7 @@ class SnoozeTimeInListTest extends TestCase
         // Call the hook handler
         $result = $plugin->messages_list_handler($args);
 
-        // Assertions: no snooze_until should be added
-        $this->assertObjectNotHasProperty('snooze_until', $result['messages'][0]);
+        // Assertions: no snooze_data should be added to env
+        $this->assertTrue(empty($rcmail->output->env['snooze_data']));
     }
 }
