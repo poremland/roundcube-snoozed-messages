@@ -110,28 +110,30 @@
 .records-table li,
 #messagelist tr,
 #messagelist li {
-  position: relative !important;
+  position: relative;
 }
 
-.snooze-until {
-  position: absolute !important;
-  right: 0.75rem !important;
-  bottom: 0.25rem !important;
-  font-size: 0.75rem !important;
-  color: #888 !important;
-  pointer-events: none !important;
-  z-index: 10 !important;
-  background: transparent !important;
-  display: block !important;
-  line-height: 1 !important;
-  white-space: nowrap !important;
+.records-table .snooze-until,
+#messagelist .snooze-until {
+  background: transparent;
+  bottom: 0.25rem;
+  color: #888;
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  right: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
 }
 
-.snooze-until:before {
-  content: '\f017';
-  margin-right: 4px;
-  font-family: icons !important;
-  font-style: normal !important;
-  font-weight: 900 !important;
+.records-table .snooze-until:before,
+#messagelist .snooze-until:before {
   color: #999;
+  content: '\f017';
+  font-family: icons !important;
+  font-style: normal;
+  font-weight: 900;
+  margin-right: 4px;
 }
