@@ -1,0 +1,8 @@
+{
+  "track_id": "snooze_list_time_20260309",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-03-09T12:00:00Z",
+  "updated_at": "2026-03-09T12:00:00Z",
+  "description": "I'd like to add the snoozed message time to the message list when in the snoozed folder."
+}
