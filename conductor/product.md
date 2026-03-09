@@ -25,7 +25,7 @@ The Roundcube Snooze Plugin is designed to help users achieve **Inbox Zero** by 
 - **UI Integration:**
     - Add a dedicated **Snooze** button to the main message toolbar for easy access.
     - Add an **Unsnooze** button to the toolbar, active only when viewing the "Snoozed" folder.
-    - Integrate with the Roundcube message list and preview pane to provide clear visual feedback for snoozed items.
+    - Integrate with the Roundcube message list and preview pane to provide clear visual feedback for snoozed items, including displaying the "Snoozed until" time directly in the message list.
 - **Snooze Storage & Tracking:**
     - **IMAP Integration:** When an email is snoozed, it is moved to a dedicated "Snoozed" IMAP folder.
     - **Database Persistence:** Snooze times are stored and tracked within the existing Roundcube database.
