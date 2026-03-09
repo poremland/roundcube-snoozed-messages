@@ -19,8 +19,8 @@
     - [x] Implement relative time formatting helper in JS
 - [x] Task: Conductor - User Manual Verification 'Frontend Implementation' (Protocol in workflow.md)
 
-## Phase 3: Version Bump & Finalization
-- [ ] Task: Update version numbers
-    - [ ] Update version to `1.1.0` in `composer.json`
-    - [ ] Update version to `1.1.0` in `snoozed_messages.php` docblock
-- [ ] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
+## Phase 3: Version Bump & Finalization [checkpoint: d79bf29]
+- [x] Task: Update version numbers d79bf29
+    - [x] Update version to `1.1.0` in `composer.json`
+    - [x] Update version to `1.1.0` in `snoozed_messages.php` docblock
+- [x] Task: Conductor - User Manual Verification 'Finalization' (Protocol in workflow.md)
