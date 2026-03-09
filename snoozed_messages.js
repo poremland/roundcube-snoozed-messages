@@ -21,6 +21,85 @@
  * @license AGPL-3.0-or-later
  */
 
+/**
+ * Helper to format relative time.
+ */
+function getRelativeTime(dateStr) {
+  // Roundcube sends UTC time from DB
+  const date = new Date(dateStr.replace(' ', 'T') + 'Z');
+  const now = new Date();
+  const diffMs = date - now;
+  const diffMins = Math.round(diffMs / 60000);
+  const diffHours = Math.round(diffMs / 3600000);
+  const diffDays = Math.round(diffMs / 86400000);
+
+  if (diffMins < 60) {
+    return `in ${diffMins} min`;
+  } else if (diffHours < 24) {
+    return `in ${diffHours} hours`;
+  } else if (diffDays === 1) {
+    return 'tomorrow';
+  } else if (diffDays < 7) {
+    return `in ${diffDays} days`;
+  } else {
+    return date.toLocaleDateString();
+  }
+}
+
+/**
+ * Helper to render snooze times in message list.
+ */
+function renderSnoozeTimes() {
+  const isSnoozeFolder = rcmail.env.mailbox === rcmail.env.snooze_folder;
+  if (!isSnoozeFolder) {
+    return;
+  }
+
+  const snoozeData = rcmail.env.snooze_data || {};
+  const messages = rcmail.env.messages || {};
+
+  Object.keys(messages).forEach((uid) => {
+    const msg = messages[uid];
+    const snoozeUntil = msg.snooze_until || (snoozeData && snoozeData[uid]);
+    if (snoozeUntil) {
+      const $row = $('#rcmrow' + uid);
+      if ($row.length) {
+        renderSnoozeLabel($row, snoozeUntil);
+      }
+    }
+  });
+}
+
+/**
+ * Helper to render the actual label on a row.
+ */
+function renderSnoozeLabel($row, snoozeUntil) {
+  // CRITICAL: DOM-based duplicate prevention is the most reliable
+  if ($row.data('snooze-rendered') || $row.find('.snooze-until').length) {
+    return;
+  }
+
+  const relativeTime = getRelativeTime(snoozeUntil);
+  
+  // Robust label retrieval
+  let label = 'Snoozed until';
+  if (typeof rcmail.gettext === 'function') {
+    label = rcmail.gettext('snoozed_until', 'snoozed_messages');
+  } else if (typeof rcmail.get_label === 'function') {
+    label = rcmail.get_label('snoozed_until', 'snoozed_messages');
+  }
+
+  const $snoozeInfo = $('<span>')
+    .addClass('snooze-until')
+    .attr('title', `${label}: ${snoozeUntil}`)
+    .text(`${label}: ${relativeTime}`);
+
+  // For absolute positioning to work, we need a relative parent.
+  // We append to the row itself, but CSS will handle the positioning.
+  $row.append($snoozeInfo);
+  $row.data('snooze-rendered', true);
+}
+
 if (window.rcmail) {
   rcmail.addEventListener('init', (evt) => {
     /**
@@ -227,9 +306,25 @@ if (window.rcmail) {
     if (rcmail.message_list) {
       rcmail.message_list.addEventListener('select', updateSnoozeStatus);
     }
-    rcmail.addEventListener('listupdate', updateSnoozeStatus);
+
+    rcmail.addEventListener('listupdate', () => {
+      updateSnoozeStatus();
+      renderSnoozeTimes();
+    });
+
+    // Listen for single row insertions
+    rcmail.addEventListener('insertrow', (props) => {
+        const isSnoozeFolder = rcmail.env.mailbox === rcmail.env.snooze_folder;
+        const snoozeData = rcmail.env.snooze_data || {};
+        const snoozeUntil = snoozeData[props.uid];
+        
+        if (isSnoozeFolder && snoozeUntil && props.row && props.row.obj) {
+            renderSnoozeLabel($(props.row.obj), snoozeUntil);
+        }
+    });
 
     // Initial check
     updateSnoozeStatus();
+    renderSnoozeTimes();
   });
 }
