@@ -196,6 +196,9 @@ if (!class_exists('rcube_db')) {
         public function fetch_assoc($result) {}
         public function table_name($name) { return $name; }
         public function insert_id($sequence = null) { return 1; }
+        public function array2list($arr) {
+            return "'" . implode("','", array_map('addslashes', $arr)) . "'";
+        }
     }
 }
 

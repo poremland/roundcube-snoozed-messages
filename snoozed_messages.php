@@ -103,6 +103,61 @@ class snoozed_messages extends rcube_plugin
         $this->register_action('plugin.unsnooze-action', [$this, 'unsnooze_action']);
         $this->add_hook('task', [$this, 'check_expired_snoozes']);
         $this->add_hook('refresh', [$this, 'check_expired_snoozes']);
+        $this->add_hook('messages_list', [$this, 'messages_list_handler']);
+    }
+
+    /**
+     * Hook handler to inject snooze time into message list.
+     *
+     * @param array $args Hook arguments.
+     * @return array Updated hook arguments.
+     */
+    public function messages_list_handler($args)
+    {
+        $rcmail = $this->get_rcmail();
+
+        // Only show snooze time in the Snoozed folder
+        if ($rcmail->storage->get_folder() !== $this->snooze_folder) {
+            return $args;
+        }
+
+        if (empty($args['messages'])) {
+            return $args;
+        }
+
+        $uids = [];
+        foreach ($args['messages'] as $msg) {
+            $uids[] = (string)$msg->uid;
+        }
+
+        if (empty($uids)) {
+            return $args;
+        }
+
+        $db = $rcmail->get_dbh();
+        $user_id = isset($rcmail->user->ID) ? $rcmail->user->ID : 1;
+        $table_name = $db->table_name('snoozed_messages');
+
+        $sql = "SELECT message_id, snoozed_until FROM $table_name " .
+               "WHERE user_id = ? AND message_id IN (" . $db->array2list($uids) . ")";
+        
+        $result = $db->query($sql, $user_id);
+        $snooze_data = [];
+        while ($row = $db->fetch_assoc($result)) {
+            $snooze_data[$row['message_id']] = $row['snoozed_until'];
+        }
+
+        if (empty($snooze_data)) {
+            return $args;
+        }
+
+        foreach ($args['messages'] as $msg) {
+            if (isset($snooze_data[$msg->uid])) {
+                $msg->snooze_until = $snooze_data[$msg->uid];
+            }
+        }
+
+        return $args;
     }
 
     /**
