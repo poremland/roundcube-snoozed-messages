@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @author Paul Oremland
  * @license AGPL-3.0-or-later
  */
@@ -103,6 +103,76 @@ class snoozed_messages extends rcube_plugin
         $this->register_action('plugin.unsnooze-action', [$this, 'unsnooze_action']);
         $this->add_hook('task', [$this, 'check_expired_snoozes']);
         $this->add_hook('refresh', [$this, 'check_expired_snoozes']);
+        $this->add_hook('messages_list', [$this, 'messages_list_handler']);
+    }
+
+    /**
+     * Hook handler to inject snooze time into message list.
+     *
+     * @param array $args Hook arguments.
+     * @return array Updated hook arguments.
+     */
+    public function messages_list_handler($args)
+    {
+        $rcmail = $this->get_rcmail();
+        $mbox = rcube_utils::get_input_value('_mbox', rcube_utils::INPUT_GPC) ?: $rcmail->storage->get_folder();
+
+        if ($mbox !== $this->snooze_folder) {
+            $rcmail->output->set_env('snooze_data', null);
+            return $args;
+        }
+
+        if (empty($args['messages'])) {
+            return $args;
+        }
+
+        $db = $rcmail->get_dbh();
+        $user_id = isset($rcmail->user->ID) ? $rcmail->user->ID : 1;
+        $table_name = $db->table_name('snoozed_messages');
+
+        $sql = "SELECT user_id, message_id, message_id_header, snoozed_until FROM $table_name WHERE user_id = ?";
+        $result = $db->query($sql, $user_id);
+
+        $db_records = [];
+        while ($row = $db->fetch_assoc($result)) {
+            $db_records[] = $row;
+        }
+
+        if (empty($db_records)) {
+            $rcmail->output->set_env('snooze_data', null);
+            return $args;
+        }
+
+        $snooze_data = [];
+        foreach ($args['messages'] as $msg) {
+            $uid = (string)$msg->uid;
+            $message_id_header = $this->get_message_id_header($uid, $this->snooze_folder);
+
+            foreach ($db_records as $row) {
+                $matched = false;
+
+                if ($message_id_header && $row['message_id_header'] === $message_id_header) {
+                    $matched = true;
+                }
+                else if ($row['message_id'] === $uid) {
+                    $matched = true;
+                }
+
+                if ($matched) {
+                    $snooze_data[$uid] = $row['snoozed_until'];
+                    break;
+                }
+            }
+        }
+
+        if (empty($snooze_data)) {
+            $rcmail->output->set_env('snooze_data', null);
+            return $args;
+        }
+
+        $rcmail->output->set_env('snooze_data', $snooze_data);
+
+        return $args;
     }
 
     /**
@@ -535,26 +605,23 @@ class snoozed_messages extends rcube_plugin
     }
 
     /**
-     * Snooze a single message.
+     * Extracts Message-ID header from a message using multiple methods.
      *
      * @param string $uid Message UID.
      * @param string $folder Folder name.
-     * @param string $until Snooze until date.
-     * @return bool True on success, false otherwise.
+     * @return string|null Message-ID header value.
      */
-    public function snooze_message($uid, $folder, $until)
+    protected function get_message_id_header($uid, $folder)
     {
         $rcmail = $this->get_rcmail();
-        $db = $rcmail->get_dbh();
-        $user_id = isset($rcmail->user->ID) ? $rcmail->user->ID : 1;
-        $table_name = $db->table_name('snoozed_messages');
-
-        // MULTI-METHOD Message-ID Extraction for Snooze
         $message_id_header = null;
         $orig_folder = $rcmail->storage->get_folder();
-        $rcmail->storage->set_folder($folder);
+        
+        if ($orig_folder !== $folder) {
+            $rcmail->storage->set_folder($folder);
+        }
 
-        // Try Method 1: Raw Headers Regex
+        // Try Method 1: Raw Headers Regex (Most reliable for exact matches)
         $raw = $rcmail->storage->get_raw_headers($uid);
         if ($raw && preg_match('/^Message-ID:\s*(<[^>]+>)/im', $raw, $m)) {
             $message_id_header = trim($m[1]);
@@ -576,7 +643,30 @@ class snoozed_messages extends rcube_plugin
             }
         }
 
-        $rcmail->storage->set_folder($orig_folder);
+        if ($orig_folder !== $folder) {
+            $rcmail->storage->set_folder($orig_folder);
+        }
+
+        return $message_id_header;
+    }
+
+    /**
+     * Snooze a single message.
+     *
+     * @param string $uid Message UID.
+     * @param string $folder Folder name.
+     * @param string $until Snooze until date.
+     * @return bool True on success, false otherwise.
+     */
+    public function snooze_message($uid, $folder, $until)
+    {
+        $rcmail = $this->get_rcmail();
+        $db = $rcmail->get_dbh();
+        $user_id = isset($rcmail->user->ID) ? $rcmail->user->ID : 1;
+        $table_name = $db->table_name('snoozed_messages');
+
+        // Extract Message-ID using refactored method
+        $message_id_header = $this->get_message_id_header($uid, $folder);
 
         if (empty($message_id_header)) {
             rcube::write_log('errors', "SNOOZE: Could not retrieve Message-ID header for UID $uid in snooze.");

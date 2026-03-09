@@ -168,6 +168,9 @@ if (!class_exists('rcmail')) {
             }
             return self::$instance;
         }
+        public static function reset_instance() {
+            self::$instance = null;
+        }
         public function get_dbh() { return $this->db ?: new rcube_db(); }
         public function get_storage() { return $this->storage ?: new rcube_storage(); }
         public static function gettext($name) { return $name; }
@@ -192,10 +195,13 @@ if (!class_exists('rcube_db')) {
      * Mock class for testing purposes.
      */
     class rcube_db {
-        public function query($sql, $params = []) { return true; }
+        public function query($sql, $params = []) { return new stdClass(); }
         public function fetch_assoc($result) {}
         public function table_name($name) { return $name; }
         public function insert_id($sequence = null) { return 1; }
+        public function array2list($arr) {
+            return "'" . implode("','", array_map('addslashes', $arr)) . "'";
+        }
     }
 }
 

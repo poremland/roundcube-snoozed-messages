@@ -13,7 +13,8 @@
  */
 .toolbar a.snooze:before,
 .toolbar a.unsnooze:before,
-.snooze-menu a:before {
+.snooze-menu a:before,
+.snooze-until:before {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-family: icons !important;
@@ -102,4 +103,37 @@
   border-radius: 3px;
   padding: 5px;
   width: 100%;
+}
+
+/* Snooze Time in Message List - Elastic Skin specific positioning */
+.records-table tr,
+.records-table li,
+#messagelist tr,
+#messagelist li {
+  position: relative;
+}
+
+.records-table .snooze-until,
+#messagelist .snooze-until {
+  background: transparent;
+  bottom: 0.25rem;
+  color: #888;
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  right: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.records-table .snooze-until:before,
+#messagelist .snooze-until:before {
+  color: #999;
+  content: '\f017';
+  font-family: icons !important;
+  font-style: normal;
+  font-weight: 900;
+  margin-right: 4px;
 }

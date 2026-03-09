@@ -11,6 +11,7 @@ $labels['snooze_nextweek'] = 'Next week';
 $labels['snooze_custom'] = 'Custom...';
 $labels['unsnooze'] = 'Unsnooze';
 $labels['unsnoozetitle'] = 'Restore message to Inbox';
+$labels['snoozed_until'] = 'Snoozed until';
 
 $messages = [];
 $messages['snoozesuccess'] = 'Message snoozed successfully.';

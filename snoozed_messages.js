@@ -16,10 +16,95 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @author Paul Oremland
  * @license AGPL-3.0-or-later
  */
+
+/**
+ * Helper to format relative time.
+ *
+ * @param {string} dateStr UTC date string from database.
+ * @return {string} Formatted relative time.
+ */
+function getRelativeTime(dateStr) {
+  // Roundcube sends UTC time from DB
+  const date = new Date(dateStr.replace(' ', 'T') + 'Z');
+  const now = new Date();
+  const diffMs = date - now;
+  const diffMins = Math.round(diffMs / 60000);
+  const diffHours = Math.round(diffMs / 3600000);
+  const diffDays = Math.round(diffMs / 86400000);
+
+  if (diffMins < 60) {
+    return 'in ' + diffMins + ' min';
+  } else if (diffHours < 24) {
+    return 'in ' + diffHours + ' hours';
+  } else if (diffDays === 1) {
+    return 'tomorrow';
+  } else if (diffDays < 7) {
+    return 'in ' + diffDays + ' days';
+  } else {
+    return date.toLocaleDateString();
+  }
+}
+
+/**
+ * Helper to render snooze times in message list.
+ */
+function renderSnoozeTimes() {
+  const isSnoozeFolder = rcmail.env.mailbox === rcmail.env.snooze_folder;
+  if (!isSnoozeFolder) {
+    return;
+  }
+
+  const snoozeData = rcmail.env.snooze_data || {};
+  const messages = rcmail.env.messages || {};
+
+  Object.keys(messages).forEach((uid) => {
+    const msg = messages[uid];
+    const snoozeUntil = msg.snooze_until || (snoozeData && snoozeData[uid]);
+    if (snoozeUntil) {
+      const $row = $('#rcmrow' + uid);
+      if ($row.length) {
+        renderSnoozeLabel($row, snoozeUntil);
+      }
+    }
+  });
+}
+
+/**
+ * Helper to render the actual label on a row.
+ *
+ * @param {jQuery} $row The message row element.
+ * @param {string} snoozeUntil UTC date string.
+ */
+function renderSnoozeLabel($row, snoozeUntil) {
+  // CRITICAL: DOM-based duplicate prevention is the most reliable
+  if ($row.data('snooze-rendered') || $row.find('.snooze-until').length) {
+    return;
+  }
+
+  const relativeTime = getRelativeTime(snoozeUntil);
+
+  // Robust label retrieval
+  let label = 'Snoozed until';
+  if (typeof rcmail.gettext === 'function') {
+    label = rcmail.gettext('snoozed_until', 'snoozed_messages');
+  } else if (typeof rcmail.get_label === 'function') {
+    label = rcmail.get_label('snoozed_until', 'snoozed_messages');
+  }
+
+  const $snoozeInfo = $('<span>')
+    .addClass('snooze-until')
+    .attr('title', label + ': ' + snoozeUntil)
+    .text(label + ': ' + relativeTime);
+
+  // For absolute positioning to work, we need a relative parent.
+  // We append to the row itself, but CSS will handle the positioning.
+  $row.append($snoozeInfo);
+  $row.data('snooze-rendered', true);
+}
 
 if (window.rcmail) {
   rcmail.addEventListener('init', (evt) => {
@@ -39,7 +124,7 @@ if (window.rcmail) {
       rcmail.enable_command('plugin.snooze-action', hasSelection && isInbox);
       rcmail.enable_command(
         'plugin.unsnooze-action',
-        hasSelection && isSnoozeFolder,
+        hasSelection && isSnoozeFolder
       );
 
       // Toggle visibility using classes
@@ -70,7 +155,7 @@ if (window.rcmail) {
         .attr('id', 'snooze-custom-dialog')
         .addClass('snooze-custom-dialog')
         .append(
-          $('<p>').text(rcmail.gettext('snoozed_messages.snooze_custom')),
+          $('<p>').text(rcmail.gettext('snoozed_messages.snooze_custom'))
         )
         .append(
           $('<input>').attr({
@@ -78,7 +163,7 @@ if (window.rcmail) {
             id: 'snooze-custom-time',
             class: 'form-control snooze-custom-time',
             value: localISO,
-          }),
+          })
         );
 
       rcmail.show_popup_dialog(
@@ -106,7 +191,7 @@ if (window.rcmail) {
                     _mbox: rcmail.env.mailbox,
                     _duration: utcVal,
                   },
-                  lock,
+                  lock
                 );
               }
               $(this).dialog('close');
@@ -123,7 +208,7 @@ if (window.rcmail) {
         {
           width: 400,
           modal: true,
-        },
+        }
       );
     };
 
@@ -133,7 +218,7 @@ if (window.rcmail) {
       () => {
         return false;
       },
-      false,
+      false
     );
 
     // 2. Register the snooze menu using Elastic UI API
@@ -166,11 +251,11 @@ if (window.rcmail) {
               _mbox: rcmail.env.mailbox,
               _duration: prop,
             },
-            lock,
+            lock
           );
         }
       },
-      false,
+      false
     );
 
     // 4. Register the unsnooze action command
@@ -188,11 +273,11 @@ if (window.rcmail) {
               _uid: rcmail.uids_to_list(selected),
               _mbox: rcmail.env.mailbox,
             },
-            lock,
+            lock
           );
         }
       },
-      false,
+      false
     );
 
     // 5. LINK EVERY MENU ITEM BY ID
@@ -208,7 +293,7 @@ if (window.rcmail) {
       rcmail.register_button(
         'plugin.snooze-action',
         'rcmbtn_snooze_' + opt,
-        'link',
+        'link'
       );
     });
 
@@ -227,9 +312,25 @@ if (window.rcmail) {
     if (rcmail.message_list) {
       rcmail.message_list.addEventListener('select', updateSnoozeStatus);
     }
-    rcmail.addEventListener('listupdate', updateSnoozeStatus);
+
+    rcmail.addEventListener('listupdate', () => {
+      updateSnoozeStatus();
+      renderSnoozeTimes();
+    });
+
+    // Listen for single row insertions
+    rcmail.addEventListener('insertrow', (props) => {
+      const isSnoozeFolder = rcmail.env.mailbox === rcmail.env.snooze_folder;
+      const snoozeData = rcmail.env.snooze_data || {};
+      const snoozeUntil = snoozeData[props.uid];
+
+      if (isSnoozeFolder && snoozeUntil && props.row && props.row.obj) {
+        renderSnoozeLabel($(props.row.obj), snoozeUntil);
+      }
+    });
 
     // Initial check
     updateSnoozeStatus();
+    renderSnoozeTimes();
   });
 }
