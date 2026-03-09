@@ -106,34 +106,41 @@
 }
 
 /* Snooze Time in Message List - Elastic Skin specific positioning */
-.records-table tr,
+
+/* Target the cells to reliably increase row height */
+.records-table tr > td,
+#messagelist tr > td,
 .records-table li,
-#messagelist tr,
 #messagelist li {
-  position: relative;
+  padding-bottom: 1.5rem !important;
 }
 
-.records-table .snooze-until,
-#messagelist .snooze-until {
-  background: transparent;
-  bottom: 0.25rem;
-  color: #888;
-  display: block;
-  font-size: 0.75rem;
-  line-height: 1;
-  pointer-events: none;
-  position: absolute;
-  right: 0.75rem;
-  white-space: nowrap;
-  z-index: 10;
+/* Target the subject cell to be the relative parent */
+.records-table .subject,
+#messagelist .subject {
+  position: relative !important;
+  display: block !important;
 }
 
-.records-table .snooze-until:before,
-#messagelist .snooze-until:before {
-  color: #999;
+.snooze-until {
+  position: absolute !important;
+  right: 0.25rem !important;
+  /* Align within the padded area of the cell */
+  bottom: 0.25rem !important; 
+  font-size: 0.75rem !important;
+  color: #888 !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  background: transparent !important;
+  display: block !important;
+  white-space: nowrap !important;
+}
+
+.snooze-until:before {
   content: '\f017';
+  margin-right: 4px;
   font-family: icons !important;
   font-style: normal;
   font-weight: 900;
-  margin-right: 4px;
+  color: #999;
 }

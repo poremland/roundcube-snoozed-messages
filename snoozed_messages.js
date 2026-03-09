@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @version 1.1.0
+ * @version 1.1.1
  * @author Paul Oremland
  * @license AGPL-3.0-or-later
  */
@@ -80,7 +80,7 @@ function renderSnoozeTimes() {
  * @param {string} snoozeUntil UTC date string.
  */
 function renderSnoozeLabel($row, snoozeUntil) {
-  // CRITICAL: DOM-based duplicate prevention is the most reliable
+  // Simple check to prevent immediate double-renders
   if ($row.data('snooze-rendered') || $row.find('.snooze-until').length) {
     return;
   }
@@ -100,9 +100,13 @@ function renderSnoozeLabel($row, snoozeUntil) {
     .attr('title', label + ': ' + snoozeUntil)
     .text(label + ': ' + relativeTime);
 
-  // For absolute positioning to work, we need a relative parent.
-  // We append to the row itself, but CSS will handle the positioning.
-  $row.append($snoozeInfo);
+  // Target the subject cell to ensure it stays in the row flow in Safari
+  let $target = $row.find('.subject');
+  if (!$target.length) {
+    $target = $row;
+  }
+
+  $target.append($snoozeInfo);
   $row.data('snooze-rendered', true);
 }
 
