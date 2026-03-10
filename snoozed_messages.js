@@ -204,6 +204,13 @@ if (!window.SNOOZE_MESSAGES_LOADED) {
           $('.snooze').addClass('hidden');
           $('.unsnooze').addClass('hidden');
         }
+
+        // Toggle body class for folder-specific styling
+        if (isSnoozeFolder) {
+          $('body').addClass('snooze-folder');
+        } else {
+          $('body').removeClass('snooze-folder');
+        }
       };
 
       /**
