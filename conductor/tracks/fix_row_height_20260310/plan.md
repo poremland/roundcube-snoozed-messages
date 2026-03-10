@@ -15,7 +15,7 @@ This plan addresses the issue where the increased row height for snoozed message
 - [x] Task: Update `snoozed_messages.js` to add the `snooze-folder` class to `<body>` when the current mailbox is the Snoozed folder, and remove it otherwise. 6978382
 
 ### Step 3: Scope CSS to Snooze Folder
-- [ ] Task: Update `skins/elastic/snoozed_messages.css` to prefix row height rules with `.snooze-folder`.
+- [x] Task: Update `skins/elastic/snoozed_messages.css` to prefix row height rules with `.snooze-folder`. 3e82b6a
 
 ## Phase 3: Verification & Cleanup
 - [ ] Task: Manual Verification: Ensure Snoozed folder has increased height and Inbox has standard height.
