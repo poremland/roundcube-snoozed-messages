@@ -1,0 +1,8 @@
+{
+  "track_id": "fix_row_height_20260310",
+  "type": "bug",
+  "status": "new",
+  "created_at": "2026-03-10T12:00:00Z",
+  "updated_at": "2026-03-10T12:00:00Z",
+  "description": "Fix the message list row height for non-Snoozed mailboxes"
+}

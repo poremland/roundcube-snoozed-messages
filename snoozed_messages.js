@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
- * @version 1.1.1
+ * @version 1.1.2
  * @author Paul Oremland
  * @license AGPL-3.0-or-later
  */
@@ -203,6 +203,13 @@ if (!window.SNOOZE_MESSAGES_LOADED) {
         } else {
           $('.snooze').addClass('hidden');
           $('.unsnooze').addClass('hidden');
+        }
+
+        // Toggle body class for folder-specific styling
+        if (isSnoozeFolder) {
+          $('body').addClass('snooze-folder');
+        } else {
+          $('body').removeClass('snooze-folder');
         }
       };
 

@@ -1,6 +1,6 @@
 {
     "name": "poremland/snoozed_messages",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Roundcube plugin to snooze emails",
     "keywords": ["roundcube", "plugin", "snooze", "inbox-zero"],
     "homepage": "https://github.com/poremland/roundcube-snoozed-messages",
