@@ -12,7 +12,7 @@ This plan addresses the issue where the increased row height for snoozed message
 - [x] Task: Bump version to 1.1.2 in `snoozed_messages.php` and `composer.json`. 14b21cc
 
 ### Step 2: Toggle Folder Class in JavaScript
-- [ ] Task: Update `snoozed_messages.js` to add the `snooze-folder` class to `<body>` when the current mailbox is the Snoozed folder, and remove it otherwise.
+- [x] Task: Update `snoozed_messages.js` to add the `snooze-folder` class to `<body>` when the current mailbox is the Snoozed folder, and remove it otherwise. 6978382
 
 ### Step 3: Scope CSS to Snooze Folder
 - [ ] Task: Update `skins/elastic/snoozed_messages.css` to prefix row height rules with `.snooze-folder`.
