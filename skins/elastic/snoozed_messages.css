@@ -107,17 +107,17 @@
 
 /* Snooze Time in Message List - Elastic Skin specific positioning */
 
-/* Target the cells to reliably increase row height */
-.records-table tr > td,
-#messagelist tr > td,
-.records-table li,
-#messagelist li {
+/* Target the cells to reliably increase row height - ONLY in the snooze folder */
+.snooze-folder .records-table tr > td,
+.snooze-folder #messagelist tr > td,
+.snooze-folder .records-table li,
+.snooze-folder #messagelist li {
   padding-bottom: 1.5rem !important;
 }
 
-/* Target the subject cell to be the relative parent */
-.records-table .subject,
-#messagelist .subject {
+/* Target the subject cell to be the relative parent - ONLY in the snooze folder */
+.snooze-folder .records-table .subject,
+.snooze-folder #messagelist .subject {
   position: relative !important;
   display: block !important;
 }
