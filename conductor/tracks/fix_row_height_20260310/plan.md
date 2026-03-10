@@ -3,8 +3,8 @@
 This plan addresses the issue where the increased row height for snoozed messages was accidentally applied to all mailboxes. We will scope the CSS change to only apply when viewing the Snoozed folder.
 
 ## Phase 1: Research & Preparation
-- [x] Task: Verify the CSS selectors currently causing the global row height increase.
-- [x] Task: Confirm how to detect the current folder in both PHP and JS.
+- [x] Task: Verify the CSS selectors currently causing the global row height increase. ea9de33
+- [x] Task: Confirm how to detect the current folder in both PHP and JS. ea9de33
 
 ## Phase 2: Implementation (TDD)
 
