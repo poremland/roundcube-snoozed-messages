@@ -14,7 +14,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Safari UI Check' (Protocol in workflow.md)
 
 ## Phase 3: Version Bump & Finalization
-- [ ] Task: Update version numbers
-    - [ ] Update version to `1.1.1` in `composer.json`
-    - [ ] Update version to `1.1.1` in `snoozed_messages.php` docblock
+- [x] Task: Update version numbers
+    - [x] Update version to `1.1.1` in `composer.json`
+    - [x] Update version to `1.1.1` in `snoozed_messages.php` docblock
 - [ ] Task: Conductor - User Manual Verification 'Final Release Check' (Protocol in workflow.md)
+
+## Phase: Review Fixes
+- [x] Task: Apply review suggestions 3895399
